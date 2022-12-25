@@ -34,3 +34,11 @@ a {
     color-scheme: dark;
   }
 }
+
+
+
+.group-new{
+  filter:url("#fancy-goo");
+}
+
+

@@ -78,7 +78,7 @@ export const getServerSideProps = async (context: any) => {
       .getMany();
 
     let isTodayAlreadySet = false;
-    const mappedData = dataset.reduce((acc: Dataset, datum) => {
+    const mappedData = dataset.reduce((acc: any, datum) => {
       const formattedDate = formatDate(new Date(datum.date));
       if (formattedDate === formatDate(new Date())) {
         isTodayAlreadySet = true;

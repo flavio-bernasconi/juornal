@@ -1,8 +1,7 @@
 import moment from "moment";
 import React, { useEffect, useMemo, useState } from "react";
 import { formatDate, getColor, getEmoji } from "../utils/functions";
-import styled from "styled-components";
-import { MAX, MIN } from "../utils/constants";
+import styled, { keyframes } from "styled-components";
 import chroma from "chroma-js";
 import { JurnalEntriesRecord, XataClient, getXataClient } from "../utils/xata";
 import { Dataset } from "../models/Dataset";
@@ -13,6 +12,7 @@ import { TbNotes } from "react-icons/tb";
 import { Loader } from "../components/Loader";
 import { useRouter } from "next/router";
 import { Head } from "../components/dashboard/Head";
+import { WeekdaysInitials } from "../components/dashboard/WeekdaysInitials";
 
 function getDaysInMonth(month: number, year: number) {
   const date = new Date(year, month, 1);
@@ -24,11 +24,9 @@ function getDaysInMonth(month: number, year: number) {
   return days;
 }
 
-const daysList = ["M", "T", "W", "T", "F", "S", "S"];
-
 const Dashboard = () => {
   const { query, replace } = useRouter();
-  const [datasetStore, setDatasetStore] = useAtom<Dataset | null>(DatasetAtom);
+  const [datasetStore, setDatasetStore] = useAtom(DatasetAtom);
 
   const [isLoading, setIsLoading] = useState(true);
   const [touchStart, setTouchStart] = React.useState(0);
@@ -107,19 +105,18 @@ const Dashboard = () => {
   return (
     <>
       <Head label={moment(listDaysMonth[0], "DD-M-YYYY").format("MMMM YYYY")} />
+      <WeekdaysInitials />
       <CalendarWrapper
         onTouchStart={(touchStartEvent) => handleTouchStart(touchStartEvent)}
         onTouchMove={(touchMoveEvent) => handleTouchMove(touchMoveEvent)}
         onTouchEnd={() => handleTouchEnd()}
+        className=" group-new"
       >
-        {daysList.map((labelDay, i) => (
-          <WeekDayInitial key={`${i}_${labelDay}`}>{labelDay}</WeekDayInitial>
-        ))}
         {listOfEmptyDays.map((i) => (
           <EmptyCell key={i} />
         ))}
 
-        {listDaysMonth.map((monthDay) => {
+        {listDaysMonth.map((monthDay, i) => {
           return datasetStore[monthDay] ? (
             <DayWrapper color={getColor(datasetStore[monthDay]?.value)}>
               <NumberOfTheMonth>
@@ -142,7 +139,18 @@ const CalendarWrapper = styled.div`
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 10px;
-  margin-top: 40px;
+  /* svg {
+    display: none;
+  } */
+`;
+
+const AnimatedWrapper = styled.div`
+  position: absolute;
+  width: 100%;
+  z-index: -1;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  height: 394px;
 `;
 
 const EmptyCell = styled.div`
@@ -183,11 +191,6 @@ const NoteSymbol = styled.div`
 const Value = styled.p`
   font-weight: 900;
   font-family: var(--inter-font);
-`;
-
-const WeekDayInitial = styled.p`
-  text-align: center;
-  margin-bottom: 10px;
 `;
 
 const NumberOfTheMonth = styled.p`

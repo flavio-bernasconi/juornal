@@ -18,7 +18,7 @@ function App({ Component, pageProps }: AppProps) {
         background: "white",
         minHeight: "100vh",
         color: "black",
-        padding: 30,
+        padding: 15,
       }}
     >
       <Component {...pageProps} />
