@@ -20,7 +20,7 @@ const Index: FC<{ dataset: Dataset; isTodayAlreadySet: boolean }> = ({
   const { push } = useRouter();
 
   useEffect(() => {
-    if (isTodayAlreadySet) {
+    if (false) {
       push({
         pathname: "/dashboard",
         query: { month: new Date().getMonth(), year: new Date().getFullYear() },

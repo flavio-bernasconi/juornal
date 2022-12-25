@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import React from "react";
 import styled from "styled-components";
+import { getNewMonthYearValues } from "../../utils/functions";
 
 type Props = {
   label: string;
@@ -12,7 +13,7 @@ export const Head = ({ label }: Props) => {
 
   const onIconClick = (month: number) => {
     replace({
-      query: { ...query, month },
+      query: { ...query, ...getNewMonthYearValues(month, Number(query.year)) },
     });
   };
 
@@ -34,7 +35,8 @@ export const Head = ({ label }: Props) => {
 const Wrapper = styled.div`
   display: flex;
   gap: 10px;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
+  justify-content: space-between;
 `;
 
 const IconsWrapper = styled.div`

@@ -76,6 +76,6 @@ let instance: XataClient | undefined = undefined;
 export const getXataClient = () => {
   if (instance) return instance;
 
-  instance = new XataClient({ apiKey: process.env.XATA_API_KEY });
+  instance = new XataClient();
   return instance;
 };

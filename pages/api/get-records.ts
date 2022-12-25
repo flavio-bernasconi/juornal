@@ -10,7 +10,6 @@ const fetchAll: NextApiHandler = async (req, res) => {
     return;
   }
 
-  console.log(req.query);
   const { month, year } = req.query;
 
   const xata = getXataClient();
@@ -22,7 +21,7 @@ const fetchAll: NextApiHandler = async (req, res) => {
     //     .set("year", Number(year))
     //     .format("YYYY-M-"),
     // })
-    .getMany();
+    .getAll();
 
   if (!list) {
     res.status(500).end();

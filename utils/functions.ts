@@ -1,5 +1,5 @@
 import chroma from "chroma-js";
-import { RANGE_STEPS, EMOJI_LIST, COLORS_STEPS } from "./constants";
+import { RANGE_STEPS, EMOJI_LIST, COLORS_STEPS } from "@/utils/constants";
 import moment from "moment";
 
 const getStepIndex = (value: number) =>
@@ -17,6 +17,14 @@ const getColor = (value: number) => {
   return scale(value);
 };
 
-const formatDate = (date: Date) => moment(date).format("DD-M-YYYY"); // June 1, 2019
+const formatDate = (date: Date) => moment(date).format("DD-M-YYYY");
 
-export { getEmoji, getStepIndex, getColor, formatDate };
+const getNewMonthYearValues = (month: number, year: number) => {
+  const M = month;
+  const Y = year;
+  if (M === 12) return { month: 0, year: Y + 1 };
+  if (M === -1) return { month: 11, year: Y - 1 };
+  return { month: M, year: Y };
+};
+
+export { getEmoji, getStepIndex, getColor, formatDate, getNewMonthYearValues };
