@@ -29,41 +29,8 @@ const Dashboard = () => {
 
   const [selectedDay, setSelectedDay] = useState<JurnalEntriesRecord>();
   const [isLoading, setIsLoading] = useState(true);
-  const [touchStart, setTouchStart] = React.useState(0);
-  const [touchEnd, setTouchEnd] = React.useState(0);
 
   const { month, year } = query;
-  const monthValue = Number(query.month);
-
-  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchEnd = () => {
-    if (isDetailOpen) return;
-
-    if (touchStart - touchEnd > 130) {
-      replace({
-        query: {
-          ...query,
-          ...getNewMonthYearValues(monthValue + 1, Number(query.year)),
-        },
-      });
-    }
-
-    if (touchStart - touchEnd < 0 && touchStart - touchEnd > -130) {
-      replace({
-        query: {
-          ...query,
-          ...getNewMonthYearValues(monthValue - 1, Number(query.year)),
-        },
-      });
-    }
-  };
 
   const areParamsNumber =
     !isNaN(Number(month)) &&
@@ -129,12 +96,7 @@ const Dashboard = () => {
     <>
       <Head label={moment(listDaysMonth[0], "DD-M-YYYY").format("MMMM YYYY")} />
       <WeekdaysInitials />
-      <CalendarWrapper
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        className=" group-new"
-      >
+      <CalendarWrapper>
         {listOfEmptyDays.map((i) => (
           <EmptyCell key={i} />
         ))}
