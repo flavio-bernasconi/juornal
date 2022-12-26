@@ -1,10 +1,7 @@
 import Head from "next/head";
 import { FC, useEffect, useState } from "react";
-import { getXataClient } from "../utils/xata";
 import { Slider } from "../components/Slider";
 import { useRouter } from "next/router";
-import { GetServerSideProps } from "next";
-import { formatDate } from "../utils/functions";
 import { Dataset } from "../models/Dataset";
 import { useAtom } from "jotai";
 import { DatasetAtom } from "../store";
@@ -76,6 +73,7 @@ export const getServerSideProps = async (context: any) => {
       },
     };
   }
+
   return { props: {} };
 };
 

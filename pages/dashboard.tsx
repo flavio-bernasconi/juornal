@@ -3,6 +3,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import {
   formatDate,
   getColor,
+  getDaysInMonth,
   getEmoji,
   getNewMonthYearValues,
 } from "@/utils/functions";
@@ -18,25 +19,10 @@ import { WeekdaysInitials } from "@/components/dashboard/WeekdaysInitials";
 import { MonthStats } from "@/components/dashboard/Stats/MonthStats";
 import chroma from "chroma-js";
 import { DraggableNotification } from "@/components/DraggableNotification";
-import { useSession, getSession } from "next-auth/react";
-
-function getDaysInMonth(month: number, year: number) {
-  const date = new Date(year, month, 1);
-  const days = [];
-  while (date.getMonth() === month) {
-    days.push(formatDate(new Date(date)));
-    date.setDate(date.getDate() + 1);
-  }
-  return days;
-}
+import { getSession } from "next-auth/react";
 
 const Dashboard = () => {
   const { query, replace } = useRouter();
-  const { data, status } = useSession({
-    required: true,
-  });
-
-  console.log(status, { data });
 
   const [datasetStore, setDatasetStore] = useAtom(DatasetAtom);
   const [isDetailOpen, setIsDetailOpen] = useAtom(NotificationAtom);
@@ -144,7 +130,7 @@ const Dashboard = () => {
       <CalendarWrapper
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
-        // onTouchEnd={handleTouchEnd}
+        onTouchEnd={handleTouchEnd}
         className=" group-new"
       >
         {listOfEmptyDays.map((i) => (
@@ -263,7 +249,7 @@ const NumberOfTheMonth = styled.p`
 `;
 
 export const getServerSideProps = async (context: any) => {
-  const { req, res, query } = context;
+  const { query } = context;
 
   const session = await getSession(context);
   console.log({ session });

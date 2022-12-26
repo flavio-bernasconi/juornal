@@ -27,4 +27,21 @@ const getNewMonthYearValues = (month: number, year: number) => {
   return { month: M, year: Y };
 };
 
-export { getEmoji, getStepIndex, getColor, formatDate, getNewMonthYearValues };
+function getDaysInMonth(month: number, year: number) {
+  const date = new Date(year, month, 1);
+  const days = [];
+  while (date.getMonth() === month) {
+    days.push(formatDate(new Date(date)));
+    date.setDate(date.getDate() + 1);
+  }
+  return days;
+}
+
+export {
+  getEmoji,
+  getStepIndex,
+  getColor,
+  formatDate,
+  getNewMonthYearValues,
+  getDaysInMonth,
+};

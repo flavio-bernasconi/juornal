@@ -22,10 +22,10 @@ export const DraggableNotification = ({ children }: Props) => {
     <Limit ref={limitRef}>
       <Wrapper
         initial={false}
-        // onDrag={(e: any) => {
-        //   if (e.offsetX > 200 || (e.offsetX < 0 && e.offsetX < -50))
-        //     setIsOpen(false);
-        // }}
+        onDrag={(e: any) => {
+          if (e.offsetX > 200 || (e.offsetX < 0 && e.offsetX < -50))
+            setIsOpen(false);
+        }}
         drag="x"
         dragConstraints={limitRef}
         style={{ x, opacity }}
