@@ -44,6 +44,7 @@ const Overlay = styled.div`
 const Wrapper = styled.div`
   position: fixed;
   width: 90%;
+  max-width: 500px;
   top: 10%;
   background: #578aba;
   height: 50vh;

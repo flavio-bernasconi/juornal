@@ -19,7 +19,7 @@ function App({ Component, pageProps }: AppProps) {
         style={{
           maxWidth: 500,
           margin: "auto",
-          background: "white",
+          // background: "white",
           minHeight: "100vh",
           color: "black",
           padding: 15,

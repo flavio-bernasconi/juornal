@@ -14,21 +14,37 @@ const authOptions: NextAuthOptions = {
       credentials: {
         username: { label: "Username", type: "text", placeholder: "jsmith" },
         password: { label: "Password", type: "password" },
+        email: { label: "email", type: "email" },
       },
       async authorize(credentials, req) {
-        const { username, password } = credentials as {
+        const { username, password, email } = credentials as {
           username: string;
           password: string;
+          email: string;
         };
 
-        if (!username || !password) {
-          throw new Error("Missing Params");
+        if (!password) {
+          throw new Error("Missing password");
         }
 
         const xata = getXataClient();
-        const user = await xata.db.Users.filter({ username }).getFirst();
-        if (!user) {
-          throw new Error("User not found");
+        const user = await xata.db.Users.filter({ email }).getFirst();
+
+        if (!user && !username) {
+          throw new Error("Username missing");
+        }
+
+        if (!user && username) {
+          const hashedPassword = await hash(password, 10);
+          const newUser = await xata.db.Users.create({
+            username,
+            password: hashedPassword,
+            email,
+          });
+
+          const { password: x, ...userInfo } = newUser;
+
+          return userInfo;
         }
 
         const passwordDb = user?.password;
@@ -37,9 +53,7 @@ const authOptions: NextAuthOptions = {
           throw new Error("Password doesn't match");
         }
 
-        const { password: x, bio, ...userInfo } = user;
-
-        return userInfo;
+        return user;
       },
     }),
   ],

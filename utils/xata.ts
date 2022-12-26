@@ -23,10 +23,10 @@ const tables = [
     name: "Users",
     columns: [
       { name: "name", type: "string" },
-      { name: "email", type: "email" },
       { name: "bio", type: "text" },
       { name: "username", type: "string", notNull: true, defaultValue: "" },
       { name: "password", type: "string", notNull: true, defaultValue: "" },
+      { name: "email", type: "email", unique: true },
     ],
   },
   {
