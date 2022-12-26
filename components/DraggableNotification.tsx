@@ -3,7 +3,7 @@ import { JurnalEntriesRecord } from "@/utils/xata";
 import { useAtom } from "jotai";
 import React, { useRef, useState } from "react";
 import styled from "styled-components";
-import { IoMdClose } from "react-icons/Io";
+import { IoMdClose } from "react-icons/io";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 
 type Props = {
