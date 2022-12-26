@@ -1,20 +1,20 @@
 import { NextApiHandler } from "next";
 import { authorize } from "../../utils/authorize";
 import { getXataClient } from "../../utils/xata";
-import moment from "moment";
+import { getSession } from "next-auth/react";
 
 const fetchAll: NextApiHandler = async (req, res) => {
-  const { isAuthenticated, username } = await authorize(req);
-  if (!isAuthenticated || !username) {
-    res.status(401).end();
-    return;
+  const session = await getSession({ req });
+
+  if (!session) {
+    return res.status(401).end();
   }
 
   const { month, year } = req.query;
 
   const xata = getXataClient();
   const list = await xata.db["Jurnal-entries"]
-    .filter("user.username", username)
+    .filter("user.username", session.user?.username)
     // .filter("date", {
     //   $contains: moment()
     //     .set("month", Number(month))

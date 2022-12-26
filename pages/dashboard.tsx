@@ -10,14 +10,15 @@ import styled from "styled-components";
 import { JurnalEntriesRecord } from "@/utils/xata";
 import { Dataset } from "@/models/Dataset";
 import { useAtom } from "jotai";
-import { DatasetAtom, DetailAtom } from "@/store";
+import { DatasetAtom, NotificationAtom } from "@/store";
 import { Loader } from "@/components/Loader";
 import { useRouter } from "next/router";
 import { Head } from "@/components/dashboard/Head";
 import { WeekdaysInitials } from "@/components/dashboard/WeekdaysInitials";
 import { MonthStats } from "@/components/dashboard/Stats/MonthStats";
 import chroma from "chroma-js";
-import { DayDetail } from "@/components/dashboard/DayDetail";
+import { DraggableNotification } from "@/components/DraggableNotification";
+import { useSession, getSession } from "next-auth/react";
 
 function getDaysInMonth(month: number, year: number) {
   const date = new Date(year, month, 1);
@@ -31,9 +32,16 @@ function getDaysInMonth(month: number, year: number) {
 
 const Dashboard = () => {
   const { query, replace } = useRouter();
-  const [datasetStore, setDatasetStore] = useAtom(DatasetAtom);
-  const [detail, setDetail] = useAtom(DetailAtom);
+  const { data, status } = useSession({
+    required: true,
+  });
 
+  console.log(status, { data });
+
+  const [datasetStore, setDatasetStore] = useAtom(DatasetAtom);
+  const [isDetailOpen, setIsDetailOpen] = useAtom(NotificationAtom);
+
+  const [selectedDay, setSelectedDay] = useState<JurnalEntriesRecord>();
   const [isLoading, setIsLoading] = useState(true);
   const [touchStart, setTouchStart] = React.useState(0);
   const [touchEnd, setTouchEnd] = React.useState(0);
@@ -77,21 +85,25 @@ const Dashboard = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const result = await fetch(
-        `/api/get-records/?month=${encodeURIComponent(
-          Number(month)
-        )}&year=${encodeURIComponent(Number(year))}`
-      );
-      const dataset: JurnalEntriesRecord[] = await result.json();
+      try {
+        const result = await fetch(
+          `/api/get-records/?month=${encodeURIComponent(
+            Number(month)
+          )}&year=${encodeURIComponent(Number(year))}`
+        );
+        const dataset: JurnalEntriesRecord[] = await result.json();
 
-      const mappedData: Dataset = dataset.reduce((acc: Dataset, datum) => {
-        const formattedDate = formatDate(new Date(datum.date));
-        acc[formattedDate] = { ...datum };
+        const mappedData: Dataset = dataset.reduce((acc: Dataset, datum) => {
+          const formattedDate = formatDate(new Date(datum.date));
+          acc[formattedDate] = { ...datum };
 
-        return acc;
-      }, {});
-      setDatasetStore(mappedData);
-      setIsLoading(false);
+          return acc;
+        }, {});
+        setDatasetStore(mappedData);
+        setIsLoading(false);
+      } catch (error) {
+        console.log(error);
+      }
     };
     areParamsNumber && isLoading && fetchData();
   }, [areParamsNumber, setDatasetStore, isLoading, datasetStore, month, year]);
@@ -113,7 +125,13 @@ const Dashboard = () => {
   }, [listDaysMonth]);
 
   const onDayClick = (data: JurnalEntriesRecord) => {
-    setDetail({ isOpen: true, data });
+    setSelectedDay(data);
+    setIsDetailOpen(true);
+  };
+
+  const closeDetail = () => {
+    setSelectedDay(undefined);
+    setIsDetailOpen(false);
   };
 
   if (!isLoading && !areParamsNumber) return <p>error</p>;
@@ -136,16 +154,12 @@ const Dashboard = () => {
           const journalEntry = datasetStore[monthDay];
           return journalEntry ? (
             <DayWrapper
-              isActive={
-                (detail.data as JurnalEntriesRecord)?.id === journalEntry.id
-              }
-              isModalOpen={detail.isOpen}
+              isActive={selectedDay?.id === journalEntry.id}
+              isModalOpen={isDetailOpen}
               key={monthDay}
               color={getColor(journalEntry?.value)}
               onClick={() =>
-                journalEntry?.note
-                  ? onDayClick(journalEntry)
-                  : setDetail({ isOpen: false, data: null })
+                journalEntry?.note ? onDayClick(journalEntry) : closeDetail()
               }
             >
               <NumberOfTheMonth>
@@ -158,10 +172,10 @@ const Dashboard = () => {
           ) : (
             <DayWrapper
               isActive={false}
-              isModalOpen={detail.isOpen}
+              isModalOpen={isDetailOpen}
               key={monthDay}
               color={"white"}
-              onClick={() => setDetail({ isOpen: false, data: null })}
+              onClick={() => setIsDetailOpen(false)}
             >
               <NumberOfTheMonth>
                 {moment(monthDay, "DD-M-YYYY").format("D")}
@@ -170,7 +184,10 @@ const Dashboard = () => {
           );
         })}
       </CalendarWrapper>
-      <DayDetail />
+      <DraggableNotification>
+        <p>{selectedDay?.date}</p>
+        <h3>{selectedDay?.note}</h3>
+      </DraggableNotification>
       <MonthStats totalDays={listDaysMonth.length} />
     </>
   );
@@ -248,6 +265,17 @@ const NumberOfTheMonth = styled.p`
 export const getServerSideProps = async (context: any) => {
   const { req, res, query } = context;
 
+  const session = await getSession(context);
+  console.log({ session });
+  if (!session) {
+    return {
+      redirect: {
+        destination: `/`,
+        permanent: false,
+      },
+    };
+  }
+
   if (!query.month || !query.year) {
     return {
       redirect: {
@@ -256,6 +284,7 @@ export const getServerSideProps = async (context: any) => {
       },
     };
   }
+
   return { props: {} };
 };
 

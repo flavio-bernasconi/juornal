@@ -3,12 +3,6 @@ import { Dataset } from "../models/Dataset";
 import { JurnalEntriesRecord } from "@/utils/xata";
 
 const DatasetAtom = atom<Dataset | null>(null);
-const DetailAtom = atom<{
-  isOpen: boolean;
-  data: unknown | JurnalEntriesRecord;
-}>({
-  isOpen: false,
-  data: null,
-});
+const NotificationAtom = atom<boolean>(false);
 
-export { DatasetAtom, DetailAtom };
+export { DatasetAtom, NotificationAtom };

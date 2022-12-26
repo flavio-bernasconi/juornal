@@ -1,4 +1,4 @@
-import { DetailAtom } from "@/store";
+import { NotificationAtom } from "@/store";
 import { JurnalEntriesRecord } from "@/utils/xata";
 import { useAtom } from "jotai";
 import React, { useRef, useState } from "react";
@@ -6,31 +6,32 @@ import styled from "styled-components";
 import { IoMdClose } from "react-icons/Io";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 
-export const DayDetail = () => {
-  const [modal, setDetail] = useAtom(DetailAtom);
+type Props = {
+  children: JSX.Element | JSX.Element[];
+};
+
+export const DraggableNotification = ({ children }: Props) => {
+  const [isOpen, setIsOpen] = useAtom(NotificationAtom);
   const limitRef = useRef(null);
   const x = useMotionValue(0);
   const opacity = useTransform(x, [-200, 0, 200], [0, 1, 0]);
 
-  if (!modal.isOpen) return null;
+  if (!isOpen) return null;
 
   return (
     <Limit ref={limitRef}>
       <Wrapper
         initial={false}
-        onDrag={(e: any) => {
-          if (e.offsetX > 200 || (e.offsetX < 0 && e.offsetX < -50))
-            setDetail({ isOpen: false, data: null });
-        }}
+        // onDrag={(e: any) => {
+        //   if (e.offsetX > 200 || (e.offsetX < 0 && e.offsetX < -50))
+        //     setIsOpen(false);
+        // }}
         drag="x"
         dragConstraints={limitRef}
         style={{ x, opacity }}
       >
-        <Content>
-          <p>{(modal.data as JurnalEntriesRecord)?.date}</p>
-          <p>{(modal.data as JurnalEntriesRecord)?.note}</p>
-        </Content>
-        <CloseWrapper onClick={() => setDetail({ isOpen: false, data: null })}>
+        <Content>{children}</Content>
+        <CloseWrapper onClick={() => setIsOpen(false)}>
           <IoMdClose size={30} />
         </CloseWrapper>
       </Wrapper>
@@ -49,17 +50,14 @@ const Limit = styled.div`
 
 const Wrapper = styled(motion.div)`
   width: 100%;
-  height: 100px;
+  min-height: 100px;
   background: #5c73aa;
   border-radius: 8px;
   box-shadow: -2px 3px 8px 0 rgba(0, 0, 0, 0.1);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  div > {
-    width: 100px;
-    height: 100px;
-  }
+  gap: 40px;
 `;
 
 const Content = styled.div`
@@ -69,7 +67,8 @@ const Content = styled.div`
 const CloseWrapper = styled.div`
   background: white;
   height: 50px;
-  width: 50px;
+  min-width: 50px;
+  max-width: 50px;
   border-radius: 50px;
   align-items: center;
   margin-right: 15px;
