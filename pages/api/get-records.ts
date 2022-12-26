@@ -6,7 +6,7 @@ import { getSession } from "next-auth/react";
 const fetchAll: NextApiHandler = async (req, res) => {
   const session = await getSession({ req });
 
-  if (!session) {
+  if (!session || !session.user?.username) {
     return res.status(401).end();
   }
 
