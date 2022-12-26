@@ -5,11 +5,13 @@ import { RANGE_STEPS, EMOJI_LIST, MIN, MAX } from "../utils/constants";
 import { getEmoji } from "../utils/functions";
 
 export const Slider = ({
+  initialValue = 0,
   onSubmit,
 }: {
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  initialValue?: number;
 }) => {
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState(initialValue);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(Number(e?.target.value));

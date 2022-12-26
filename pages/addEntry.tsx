@@ -7,6 +7,7 @@ import { useAtom } from "jotai";
 import { DatasetAtom } from "../store";
 import { Loader } from "../components/Loader";
 import { getSession } from "next-auth/react";
+import { createRecord } from "@/utils/api/records";
 
 const AddEntry: FC<{ dataset: Dataset; isTodayAlreadySet: boolean }> = ({
   dataset,
@@ -32,20 +33,16 @@ const AddEntry: FC<{ dataset: Dataset; isTodayAlreadySet: boolean }> = ({
     e.preventDefault();
     const data = new FormData(e.currentTarget);
 
-    await fetch("/api/add-record", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        date: new Date(),
+    await createRecord({
+      body: {
+        date: new Date().toISOString(),
         value: Number(data.get("value")),
         note: data.get("note"),
-      }),
+      },
     });
 
     push({
-      pathname: "/dashboard",
+      pathname: "/",
       query: { month: new Date().getMonth(), year: new Date().getFullYear() },
     });
   };
@@ -64,11 +61,10 @@ const AddEntry: FC<{ dataset: Dataset; isTodayAlreadySet: boolean }> = ({
 
 export const getServerSideProps = async (context: any) => {
   const session = await getSession(context);
-  console.log({ session });
   if (!session) {
     return {
       redirect: {
-        destination: `/`,
+        destination: `/auth/login`,
         permanent: false,
       },
     };

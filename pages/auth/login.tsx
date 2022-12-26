@@ -26,7 +26,7 @@ const Index = () => {
       }
 
       if (response?.ok) {
-        push("/addEntry");
+        push("/");
       }
     } catch (error) {
       console.error({ error });
@@ -53,7 +53,7 @@ export const getServerSideProps = async (context: any) => {
   if (session) {
     return {
       redirect: {
-        destination: `/addEntry`,
+        destination: `/`,
         permanent: false,
       },
     };
