@@ -44,7 +44,9 @@ const Dashboard = () => {
   };
 
   const handleTouchEnd = () => {
-    if (touchStart - touchEnd > 120) {
+    if (isDetailOpen) return;
+
+    if (touchStart - touchEnd > 130) {
       replace({
         query: {
           ...query,
@@ -53,7 +55,7 @@ const Dashboard = () => {
       });
     }
 
-    if (touchStart - touchEnd < -120) {
+    if (touchStart - touchEnd < 0 && touchStart - touchEnd > -130) {
       replace({
         query: {
           ...query,
