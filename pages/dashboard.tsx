@@ -245,4 +245,18 @@ const NumberOfTheMonth = styled.p`
   left: 4px;
 `;
 
+export const getServerSideProps = async (context: any) => {
+  const { req, res, query } = context;
+
+  if (!query.month || !query.year) {
+    return {
+      redirect: {
+        destination: `/dashboard/?month=${new Date().getMonth()}&year=${new Date().getFullYear()}`,
+        permanent: false,
+      },
+    };
+  }
+  return { props: {} };
+};
+
 export default Dashboard;
