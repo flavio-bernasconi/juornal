@@ -15,17 +15,19 @@ const Register = () => {
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = new FormData(e.currentTarget);
+    const email = data.get("email");
+    const password = data.get("password");
+
+    if (!email || !password) return;
 
     // try {
     setIsLoading(true);
     const response = await signIn("credentials", {
-      email: data.get("email"),
-      password: data.get("password"),
+      email,
+      password,
       ...(isRegister && { username: data.get("username") }),
       redirect: false,
     });
-
-    console.log({ response });
 
     if (!response?.ok && response?.error) {
       setError(response?.error);
@@ -46,8 +48,13 @@ const Register = () => {
   return (
     <CenterBlock>
       <Form onSubmit={onSubmit}>
-        <input type="email" name="email" placeholder="email" />{" "}
-        <input type="password" name="password" placeholder="password" />
+        <input type="email" name="email" required placeholder="email" />{" "}
+        <input
+          type="password"
+          name="password"
+          required
+          placeholder="password"
+        />
         {isRegister && (
           <input type="text" name="username" placeholder="username" />
         )}
