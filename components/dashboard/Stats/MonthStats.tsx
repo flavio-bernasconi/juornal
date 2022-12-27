@@ -1,3 +1,4 @@
+import { ForceChart } from "@/components/dashboard/charts/Force";
 import { DatasetAtom } from "@/store";
 import { EMOJI_LIST } from "@/utils/constants";
 import { getEmoji, getStepIndex } from "@/utils/functions";
@@ -5,6 +6,7 @@ import { useAtom } from "jotai";
 import moment from "moment";
 import { useRouter } from "next/router";
 import React from "react";
+import styled from "styled-components";
 
 type Props = {
   totalDays: number;
@@ -18,7 +20,7 @@ export const MonthStats = ({ totalDays }: Props) => {
 
   if (!datasetStore) return null;
 
-  const filteredDataset = Object.fromEntries(
+  const monthDataset = Object.fromEntries(
     Object.entries(datasetStore).filter(([_, datum]) =>
       datum.date.startsWith(
         moment(`${year}-${Number(month) + 1}`, "YYYY-M").format("YYYY-MM")
@@ -26,7 +28,7 @@ export const MonthStats = ({ totalDays }: Props) => {
     )
   );
 
-  const listValues = Object.entries(filteredDataset).map(([_, datum]) =>
+  const listValues = Object.entries(monthDataset).map(([_, datum]) =>
     getStepIndex(datum.value)
   );
 
@@ -38,15 +40,39 @@ export const MonthStats = ({ totalDays }: Props) => {
     {}
   );
 
+  const missingDays = totalDays - Object.keys(monthDataset).length;
+
   return (
-    <div>
+    <Wrapper>
       <h3>total days = {totalDays}</h3>
-      <h3>populated days = {Object.keys(filteredDataset).length}</h3>
+      <h3>populated days = {Object.keys(monthDataset).length}</h3>
       {Object.entries(groupedByStep).map(([stepKey, value]) => (
-        <p key={stepKey}>
-          {EMOJI_LIST[Number(stepKey)]} === {value}
-        </p>
+        <div key={stepKey}>
+          <p>
+            {EMOJI_LIST[Number(stepKey)]} ==={" "}
+            {Number((value / totalDays) * 100).toFixed(0)}% ({value})
+          </p>
+          <p></p>
+        </div>
       ))}
-    </div>
+      <ForceChart
+        dataset={[
+          ...Array(missingDays),
+          ...Object.values(monthDataset).map((d) => d.value),
+        ]}
+        grouped={Object.values(groupedByStep)}
+        totalDays={totalDays}
+        missingDays={missingDays}
+        monthDataset={monthDataset}
+      />
+    </Wrapper>
   );
 };
+
+const Wrapper = styled.div`
+  min-height: 100vh;
+  background: white;
+  border-top-left-radius: 40px;
+  border-top-right-radius: 40px;
+  padding: 40px 20px;
+`;

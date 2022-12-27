@@ -27,10 +27,16 @@ const getNewMonthYearValues = (month: number, year: number) => {
   return { month: M, year: Y };
 };
 
-function getDaysInMonth(month: number, year: number) {
-  const date = new Date(year, month, 1);
+function getDaysInMonth(month: number | string, year: number | string) {
+  let date;
+  if (typeof month !== "number" && typeof month !== "number") {
+    date = new Date(Number(year), Number(month), 1);
+  } else {
+    date = new Date(year as number, month, 1);
+  }
+
   const days = [];
-  while (date.getMonth() === month) {
+  while (date.getMonth() == month) {
     days.push(formatDate(new Date(date)));
     date.setDate(date.getDate() + 1);
   }

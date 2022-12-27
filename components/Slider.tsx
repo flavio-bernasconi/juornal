@@ -53,8 +53,8 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  width: 300px;
-  margin: 0 auto;
+  /* width: 300px; */
+  /* margin: 0 auto; */
   color: black;
   button {
     padding: 8px 16px;
@@ -65,6 +65,12 @@ const Wrapper = styled.div`
   input {
     width: 100%;
     margin: 15px 0;
+  }
+  textarea {
+    background: white;
+    width: 100%;
+    height: 100px;
+    color: black;
   }
 `;
 

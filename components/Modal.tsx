@@ -18,17 +18,26 @@ export const Modal = ({ children, date }: Props) => {
     <>
       <Overlay onClick={() => setIsOpen(false)} />
       <Wrapper>
-        <div>
+        <Head>
           <p>{date}</p>
           <CloseWrapper onClick={() => setIsOpen(false)}>
             <IoMdClose size={30} />
           </CloseWrapper>
-        </div>
+        </Head>
         <div>{children}</div>
       </Wrapper>
     </>
   );
 };
+
+const Head = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  p {
+    font-size: 24px;
+  }
+`;
 
 const Overlay = styled.div`
   position: absolute;

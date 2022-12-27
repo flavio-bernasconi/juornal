@@ -23,6 +23,7 @@ import { getSession } from "next-auth/react";
 import { Modal } from "@/components/Modal";
 import { ModalSlider } from "@/components/dashboard/ModalSlider";
 import { fetchAllRecords } from "@/utils/api/records";
+import css from "styled-jsx/css";
 
 const Dashboard = () => {
   const { query, replace } = useRouter();
@@ -114,66 +115,74 @@ const Dashboard = () => {
 
   return (
     <>
-      <Head label={moment(listDaysMonth[0], "DD-M-YYYY").format("MMMM YYYY")} />
-      <WeekdaysInitials />
-      <CalendarWrapper>
-        {listOfEmptyDays.map((i) => (
-          <EmptyCell key={i} />
-        ))}
-        {listDaysMonth.map((monthDay) => {
-          const journalEntry = datasetStore[monthDay];
-          return journalEntry ? (
-            <DayWrapper
-              isActive={selectedDay?.id === journalEntry.id}
-              isModalOpen={isDetailOpen}
-              key={monthDay}
-              color={getColor(journalEntry?.value)}
-              onClick={() => onDayClick({ data: journalEntry })}
-            >
-              <NumberOfTheMonth>
-                {moment(monthDay, "DD-M-YYYY").format("D")}
-              </NumberOfTheMonth>
-              <h4 key={monthDay}>{getEmoji(journalEntry?.value)}</h4>
-              <Value>{journalEntry?.value}</Value>
-              {journalEntry?.note && <NoteSymbol />}
-            </DayWrapper>
+      <Container>
+        <Head
+          label={moment(listDaysMonth[0], "DD-M-YYYY").format("MMMM YYYY")}
+        />
+        <WeekdaysInitials />
+        <CalendarWrapper>
+          {listOfEmptyDays.map((i) => (
+            <EmptyCell key={i} />
+          ))}
+          {listDaysMonth.map((monthDay) => {
+            const journalEntry = datasetStore[monthDay];
+            return journalEntry ? (
+              <DayWrapper
+                isActive={selectedDay?.id === journalEntry.id}
+                isModalOpen={isDetailOpen}
+                key={monthDay}
+                color={getColor(journalEntry?.value)}
+                onClick={() => onDayClick({ data: journalEntry })}
+              >
+                <NumberOfTheMonth>
+                  {moment(monthDay, "DD-M-YYYY").format("D")}
+                </NumberOfTheMonth>
+                <h4 key={monthDay}>{getEmoji(journalEntry?.value)}</h4>
+                <Value>{journalEntry?.value}</Value>
+                {journalEntry?.note && <NoteSymbol />}
+              </DayWrapper>
+            ) : (
+              <DayWrapper
+                isActive={false}
+                isModalOpen={isDetailOpen}
+                key={monthDay}
+                color={"white"}
+                onClick={() => onDayClick({ date: monthDay })}
+                // onClick={() => setIsDetailOpen(false)}
+              >
+                <NumberOfTheMonth>
+                  {moment(monthDay, "DD-M-YYYY").format("D")}
+                </NumberOfTheMonth>
+              </DayWrapper>
+            );
+          })}
+        </CalendarWrapper>
+        <Modal date={moment(selectedDay?.date).format("D MMMM YYYY")}>
+          {selectedDay?.id ? (
+            <>
+              <h3>{selectedDay?.note}</h3>
+              <ModalSlider
+                value={selectedDay?.value as number}
+                id={selectedDay?.id as string}
+                date={selectedDay?.date}
+              />
+            </>
           ) : (
-            <DayWrapper
-              isActive={false}
-              isModalOpen={isDetailOpen}
-              key={monthDay}
-              color={"white"}
-              onClick={() => onDayClick({ date: monthDay })}
-              // onClick={() => setIsDetailOpen(false)}
-            >
-              <NumberOfTheMonth>
-                {moment(monthDay, "DD-M-YYYY").format("D")}
-              </NumberOfTheMonth>
-            </DayWrapper>
-          );
-        })}
-      </CalendarWrapper>
-      <Modal date={moment(selectedDay?.date).format("D MMMM YYYY")}>
-        {selectedDay?.id ? (
-          <>
-            <h3>{selectedDay?.note}</h3>
             <ModalSlider
-              value={selectedDay?.value as number}
-              id={selectedDay?.id as string}
-              date={selectedDay?.date}
+              date={moment(selectedDay?.date, "DD-M-YYYY").toISOString()}
             />
-          </>
-        ) : (
-          <ModalSlider
-            date={moment(selectedDay?.date, "DD-M-YYYY").toISOString()}
-          />
-        )}
-      </Modal>
+          )}
+        </Modal>
+      </Container>
       <MonthStats totalDays={listDaysMonth.length} />
       <FloatingButton>+</FloatingButton>
     </>
   );
 };
+
+const Container = styled.div`
+  padding: 15px;
+`;
 
 const CalendarWrapper = styled.div`
   display: grid;
@@ -182,24 +191,24 @@ const CalendarWrapper = styled.div`
   margin-bottom: 30px;
 `;
 
-const EmptyCell = styled.div`
+const Cell = styled.div`
   min-width: calc(100% / 7);
-  min-height: 58px;
+  min-height: 80px;
   border-radius: 8px;
-  border: solid 1px #f2f2f2;
+  padding: 0 15px;
 `;
 
-const DayWrapper = styled.div<{
+const EmptyCell = styled(Cell)`
+  border: solid 1px #c4c4c4;
+`;
+
+const DayWrapper = styled(Cell)<{
   color: any;
   isActive?: boolean;
   isModalOpen?: boolean;
 }>`
   color: ${({ color }) => chroma(color).darken(3).saturate(2).hex()};
   position: relative;
-  min-width: calc(100% / 7);
-  padding: 15px;
-  border-radius: 8px;
-  min-height: 58px;
   display: flex;
   flex-direction: column;
   align-items: center;

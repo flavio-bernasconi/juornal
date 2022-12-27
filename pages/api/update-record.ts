@@ -37,6 +37,7 @@ const handler: NextApiHandler = async (req, res) => {
     } else {
       await xata.db["Jurnal-entries"].update(id, {
         value,
+        note,
       });
     }
 
