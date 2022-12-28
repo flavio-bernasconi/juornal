@@ -52,7 +52,7 @@ export const MonthStats = ({ totalDays }: Props) => {
   const listColors = Object.values(monthDataset).map((d) =>
     getColor(d.value).hex()
   );
-  console.log(monthDataset);
+
   return (
     <>
       <Totals

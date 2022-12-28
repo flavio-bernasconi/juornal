@@ -40,8 +40,6 @@ export const ModalSlider = ({ note, value, id, date }: Props) => {
     // window.location.reload();
   };
 
-  console.log({ value });
-
   return (
     <div>
       <CloseWrapper onClick={() => setIsDetailOpen(false)}>

@@ -110,7 +110,6 @@ export const ForceChart = ({
       if (!Object.keys(groupByStep).includes(i.toString())) {
         acc[i] = [];
       } else {
-        console.log(groupByStep[i]);
         acc[i] = groupByStep[i];
       }
       return acc;

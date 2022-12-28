@@ -106,7 +106,6 @@ const Dashboard = () => {
     const defDateFormat = date ? "DD/MM/YYYY" : "YYYY-MM-DD";
     const diffing = moment().diff(moment(defDate, defDateFormat)) < 0;
 
-    console.log(moment(date, "DD-M-YYYY").toISOString());
     if (!diffing) {
       if (date) {
         setSelectedDay({
@@ -140,8 +139,6 @@ const Dashboard = () => {
           ))}
           {listDaysMonth.map((monthDay, i) => {
             const journalEntry = datasetStore[monthDay];
-            console.log(i);
-
             return journalEntry ? (
               <DayWrapper
                 isActive={selectedDay?.id === journalEntry.id}
