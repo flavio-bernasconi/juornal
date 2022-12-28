@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useRouter } from "next/router";
 import { RANGE_STEPS, EMOJI_LIST, MIN, MAX } from "../utils/constants";
@@ -11,7 +11,11 @@ export const Slider = ({
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   initialValue?: number;
 }) => {
-  const [value, setValue] = useState(initialValue);
+  const [value, setValue] = useState<number>(0);
+
+  useEffect(() => {
+    setValue(initialValue);
+  }, [initialValue]);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(Number(e?.target.value));

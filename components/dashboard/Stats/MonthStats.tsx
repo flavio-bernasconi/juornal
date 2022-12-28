@@ -1,11 +1,14 @@
 import { ForceChart } from "@/components/dashboard/charts/Force";
+import { Timeline } from "@/components/dashboard/charts/Timeline";
+import { Totals } from "@/components/dashboard/charts/Totals";
 import { DatasetAtom } from "@/store";
-import { EMOJI_LIST } from "@/utils/constants";
-import { getEmoji, getStepIndex } from "@/utils/functions";
+import { COLORS_STEPS, EMOJI_LIST } from "@/utils/constants";
+import { getColor, getEmoji, getStepIndex } from "@/utils/functions";
+import chroma from "chroma-js";
 import { useAtom } from "jotai";
 import moment from "moment";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
 type Props = {
@@ -17,15 +20,20 @@ export const MonthStats = ({ totalDays }: Props) => {
   const [datasetStore] = useAtom(DatasetAtom);
 
   const { month, year } = query;
+  const [first, setfirst] = useState("");
+
+  useEffect(() => {
+    setfirst(month as string);
+  }, [month]);
 
   if (!datasetStore) return null;
 
   const monthDataset = Object.fromEntries(
-    Object.entries(datasetStore).filter(([_, datum]) =>
-      datum.date.startsWith(
+    Object.entries(datasetStore).filter(([_, datum]) => {
+      return datum.date.startsWith(
         moment(`${year}-${Number(month) + 1}`, "YYYY-M").format("YYYY-MM")
-      )
-    )
+      );
+    })
   );
 
   const listValues = Object.entries(monthDataset).map(([_, datum]) =>
@@ -41,20 +49,18 @@ export const MonthStats = ({ totalDays }: Props) => {
   );
 
   const missingDays = totalDays - Object.keys(monthDataset).length;
-
+  const listColors = Object.values(monthDataset).map((d) =>
+    getColor(d.value).hex()
+  );
+  console.log(monthDataset);
   return (
-    <Wrapper>
-      <h3>total days = {totalDays}</h3>
-      <h3>populated days = {Object.keys(monthDataset).length}</h3>
-      {Object.entries(groupedByStep).map(([stepKey, value]) => (
-        <div key={stepKey}>
-          <p>
-            {EMOJI_LIST[Number(stepKey)]} ==={" "}
-            {Number((value / totalDays) * 100).toFixed(0)}% ({value})
-          </p>
-          <p></p>
-        </div>
-      ))}
+    <>
+      <Totals
+        populatedDays={Object.keys(monthDataset).length}
+        totalDays={totalDays}
+        averageColor={COLORS_STEPS[0]}
+      />
+      <h1>Charts</h1>
       <ForceChart
         dataset={[
           ...Array(missingDays),
@@ -65,14 +71,16 @@ export const MonthStats = ({ totalDays }: Props) => {
         missingDays={missingDays}
         monthDataset={monthDataset}
       />
-    </Wrapper>
+      <Timeline
+        dataset={[
+          ...Array(missingDays),
+          ...Object.values(monthDataset).map((d) => d.value),
+        ]}
+        grouped={Object.values(groupedByStep)}
+        totalDays={totalDays}
+        missingDays={missingDays}
+        monthDataset={monthDataset}
+      />
+    </>
   );
 };
-
-const Wrapper = styled.div`
-  min-height: 100vh;
-  background: white;
-  border-top-left-radius: 40px;
-  border-top-right-radius: 40px;
-  padding: 40px 20px;
-`;

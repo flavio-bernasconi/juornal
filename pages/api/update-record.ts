@@ -28,6 +28,8 @@ const handler: NextApiHandler = async (req, res) => {
     }
 
     if (!id && (value || value === 0) && date) {
+      console.log(moment(date).toISOString(), { date });
+
       await xata.db["Jurnal-entries"].create({
         date,
         value,

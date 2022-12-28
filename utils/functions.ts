@@ -2,11 +2,17 @@ import chroma from "chroma-js";
 import { RANGE_STEPS, EMOJI_LIST, COLORS_STEPS } from "@/utils/constants";
 import moment from "moment";
 
-const getStepIndex = (value: number) =>
-  RANGE_STEPS.findIndex((step: number, i: number) => {
-    return value < step || value === step;
+const getStepIndex = (value: number) => {
+  return [
+    [-50, -25],
+    [-24, -1],
+    [0, 0],
+    [1, 25],
+    [25, 50],
+  ].findIndex(([min, max]) => {
+    return value >= min && value <= max;
   });
-
+};
 const getEmoji = (value: number) => {
   const stepIndex = getStepIndex(value);
   return EMOJI_LIST[stepIndex] || "😵‍💫";

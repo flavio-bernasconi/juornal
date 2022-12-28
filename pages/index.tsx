@@ -11,7 +11,7 @@ import styled from "styled-components";
 import { JurnalEntriesRecord } from "@/utils/xata";
 import { Dataset } from "@/models/Dataset";
 import { useAtom } from "jotai";
-import { DatasetAtom, NotificationAtom } from "@/store";
+import { DatasetAtom, LoadingAtom, NotificationAtom } from "@/store";
 import { Loader } from "@/components/Loader";
 import { useRouter } from "next/router";
 import { Head } from "@/components/dashboard/Head";
@@ -30,6 +30,7 @@ const Dashboard = () => {
 
   const [datasetStore, setDatasetStore] = useAtom(DatasetAtom);
   const [isDetailOpen, setIsDetailOpen] = useAtom(NotificationAtom);
+  const [isUpdating, setIsUpdating] = useAtom(LoadingAtom);
 
   const [selectedDay, setSelectedDay] = useState<JurnalEntriesRecord>();
   const [isLoading, setIsLoading] = useState(true);
@@ -59,12 +60,24 @@ const Dashboard = () => {
         }, {});
         setDatasetStore(mappedData);
         setIsLoading(false);
+        setIsUpdating(false);
       } catch (error) {
         console.error(error);
+        setIsLoading(false);
+        setIsUpdating(false);
       }
     };
-    areParamsNumber && isLoading && fetchData();
-  }, [areParamsNumber, setDatasetStore, isLoading, datasetStore, month, year]);
+    areParamsNumber && (isUpdating || isLoading) && fetchData();
+  }, [
+    areParamsNumber,
+    setDatasetStore,
+    isLoading,
+    datasetStore,
+    month,
+    year,
+    isUpdating,
+    setIsUpdating,
+  ]);
 
   const listDaysMonth = useMemo(
     () => areParamsNumber && getDaysInMonth(Number(month), Number(year)),
@@ -93,25 +106,26 @@ const Dashboard = () => {
     const defDateFormat = date ? "DD/MM/YYYY" : "YYYY-MM-DD";
     const diffing = moment().diff(moment(defDate, defDateFormat)) < 0;
 
+    console.log(moment(date, "DD-M-YYYY").toISOString());
     if (!diffing) {
       if (date) {
-        setSelectedDay({ date } as JurnalEntriesRecord);
+        setSelectedDay({
+          date: moment(date, "DD-M-YYYY").toISOString(),
+        } as JurnalEntriesRecord);
         setIsDetailOpen(true);
       }
       if (data) {
         setSelectedDay(data);
         setIsDetailOpen(true);
       }
+    } else {
+      setIsDetailOpen(false);
     }
   };
 
-  const closeDetail = () => {
-    setSelectedDay(undefined);
-    setIsDetailOpen(false);
-  };
-
   if (!isLoading && !areParamsNumber) return <p>error</p>;
-  if (isLoading || !datasetStore || !listDaysMonth) return <Loader />;
+  if (isLoading || !datasetStore || !listDaysMonth || isUpdating)
+    return <Loader />;
 
   return (
     <>
@@ -124,8 +138,10 @@ const Dashboard = () => {
           {listOfEmptyDays.map((i) => (
             <EmptyCell key={i} />
           ))}
-          {listDaysMonth.map((monthDay) => {
+          {listDaysMonth.map((monthDay, i) => {
             const journalEntry = datasetStore[monthDay];
+            console.log(i);
+
             return journalEntry ? (
               <DayWrapper
                 isActive={selectedDay?.id === journalEntry.id}
@@ -137,7 +153,7 @@ const Dashboard = () => {
                 <NumberOfTheMonth>
                   {moment(monthDay, "DD-M-YYYY").format("D")}
                 </NumberOfTheMonth>
-                <h4 key={monthDay}>{getEmoji(journalEntry?.value)}</h4>
+                {/* <h4 key={monthDay}>{getEmoji(journalEntry?.value)}</h4> */}
                 <Value>{journalEntry?.value}</Value>
                 {journalEntry?.note && <NoteSymbol />}
               </DayWrapper>
@@ -157,24 +173,14 @@ const Dashboard = () => {
             );
           })}
         </CalendarWrapper>
-        <Modal date={moment(selectedDay?.date).format("D MMMM YYYY")}>
-          {selectedDay?.id ? (
-            <>
-              <h3>{selectedDay?.note}</h3>
-              <ModalSlider
-                value={selectedDay?.value as number}
-                id={selectedDay?.id as string}
-                date={selectedDay?.date}
-              />
-            </>
-          ) : (
-            <ModalSlider
-              date={moment(selectedDay?.date, "DD-M-YYYY").toISOString()}
-            />
-          )}
-        </Modal>
       </Container>
-      <MonthStats totalDays={listDaysMonth.length} />
+      <WrapperDetail>
+        {isDetailOpen && selectedDay ? (
+          <ModalSlider {...selectedDay} />
+        ) : (
+          <MonthStats totalDays={listDaysMonth.length} />
+        )}
+      </WrapperDetail>
       <FloatingButton>+</FloatingButton>
     </>
   );
@@ -193,7 +199,7 @@ const CalendarWrapper = styled.div`
 
 const Cell = styled.div`
   min-width: calc(100% / 7);
-  min-height: 80px;
+  min-height: 50px;
   border-radius: 8px;
   padding: 0 15px;
 `;
@@ -207,7 +213,7 @@ const DayWrapper = styled(Cell)<{
   isActive?: boolean;
   isModalOpen?: boolean;
 }>`
-  color: ${({ color }) => chroma(color).darken(3).saturate(2).hex()};
+  color: ${({ color }) => chroma(color).darken(3).hex()};
   position: relative;
   display: flex;
   flex-direction: column;
@@ -266,6 +272,14 @@ const FloatingButton = styled.p`
   display: flex;
   align-items: center;
   justify-content: center;
+`;
+
+const WrapperDetail = styled.div`
+  min-height: 100vh;
+  background: white;
+  border-top-left-radius: 40px;
+  border-top-right-radius: 40px;
+  padding: 40px 20px;
 `;
 
 export const getServerSideProps = async (context: any) => {
