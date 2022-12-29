@@ -37,12 +37,16 @@ export const ModalSlider = ({ note, value, id, date }: Props) => {
     }
 
     setIsDetailOpen(false);
-    // window.location.reload();
+  };
+
+  const closeDetail = () => {
+    setIsDetailOpen(false);
+    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
   };
 
   return (
     <div>
-      <CloseWrapper onClick={() => setIsDetailOpen(false)}>
+      <CloseWrapper onClick={closeDetail}>
         <IoMdClose size={30} />
       </CloseWrapper>
       {note && <p>{note}</p>}

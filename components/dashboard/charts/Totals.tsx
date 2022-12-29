@@ -45,7 +45,7 @@ export const Totals = ({ totalDays, populatedDays, averageColor }: Props) => {
   const yScale = d3.scaleLinear().domain([-50, 50]).range([200, 0]);
 
   return (
-    <div>
+    <div style={{ margin: "20px 0" }}>
       <p style={{ marginBottom: 10 }}>
         Populated days {populatedDays}/{totalDays}
       </p>

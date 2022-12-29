@@ -55,7 +55,7 @@ export const ForceChart = ({
     const svgElement = d3.select(ref?.current).selectAll("g");
 
     d3.forceSimulation(nodes as SimulationNodeDatum[])
-      //   .force("charge", d3.forceManyBody().strength(5))
+      .force("charge", d3.forceManyBody().strength(4))
       .force("x", d3.forceX().x(window.innerWidth / 2 - 20))
       .force(
         "y",

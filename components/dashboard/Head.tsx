@@ -18,7 +18,7 @@ export const Head = ({ label }: Props) => {
   };
 
   return (
-    <Wrapper>
+    <Wrapper id="head">
       <h1>{label}</h1>
       <IconsWrapper>
         <IconWrapper onClick={() => onIconClick(monthValue - 1)}>

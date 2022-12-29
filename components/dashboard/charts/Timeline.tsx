@@ -33,14 +33,6 @@ export const Timeline = ({ monthDataset }: Props) => {
     }
   });
 
-  // const timeScale = d3
-  //   .scaleTime()
-  //   .domain([
-  //     new Date(monthDays[0].split("-").reverse().join(",")),
-  //     new Date(monthDays[monthDays.length - 1].split("-").reverse().join(",")),
-  //   ])
-  //   .range([0, WIDTH]);
-
   const xScale = d3
     .scaleBand()
     .domain(monthDays)

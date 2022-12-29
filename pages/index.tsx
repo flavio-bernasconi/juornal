@@ -117,6 +117,7 @@ const Dashboard = () => {
         setSelectedDay(data);
         setIsDetailOpen(true);
       }
+      window.scrollTo({ top: 250, left: 0, behavior: "smooth" });
     } else {
       setIsDetailOpen(false);
     }
@@ -171,7 +172,7 @@ const Dashboard = () => {
           })}
         </CalendarWrapper>
       </Container>
-      <WrapperDetail>
+      <WrapperDetail id="section-1">
         {isDetailOpen && selectedDay ? (
           <ModalSlider {...selectedDay} />
         ) : (
@@ -276,7 +277,7 @@ const WrapperDetail = styled.div`
   background: white;
   border-top-left-radius: 40px;
   border-top-right-radius: 40px;
-  padding: 40px 20px;
+  padding: 20px;
 `;
 
 export const getServerSideProps = async (context: any) => {

@@ -1,15 +1,14 @@
 import { ForceChart } from "@/components/dashboard/charts/Force";
+import { SemiCircle } from "@/components/dashboard/charts/SemiCircle";
 import { Timeline } from "@/components/dashboard/charts/Timeline";
 import { Totals } from "@/components/dashboard/charts/Totals";
-import { DatasetAtom } from "@/store";
-import { COLORS_STEPS, EMOJI_LIST } from "@/utils/constants";
-import { getColor, getEmoji, getStepIndex } from "@/utils/functions";
-import chroma from "chroma-js";
+import { DatasetAtom, MonthDatasetAtom } from "@/store";
+import { COLORS_STEPS } from "@/utils/constants";
+import { getStepIndex } from "@/utils/functions";
 import { useAtom } from "jotai";
 import moment from "moment";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
 
 type Props = {
   totalDays: number;
@@ -18,6 +17,7 @@ type Props = {
 export const MonthStats = ({ totalDays }: Props) => {
   const { query } = useRouter();
   const [datasetStore] = useAtom(DatasetAtom);
+  const [monthDatasetStore, setMonthDatasetStore] = useAtom(MonthDatasetAtom);
 
   const { month, year } = query;
   const [first, setfirst] = useState("");
@@ -26,17 +26,22 @@ export const MonthStats = ({ totalDays }: Props) => {
     setfirst(month as string);
   }, [month]);
 
-  if (!datasetStore) return null;
-
-  const monthDataset = Object.fromEntries(
-    Object.entries(datasetStore).filter(([_, datum]) => {
-      return datum.date.startsWith(
-        moment(`${year}-${Number(month) + 1}`, "YYYY-M").format("YYYY-MM")
+  useEffect(() => {
+    if (datasetStore) {
+      const monthDataset = Object.fromEntries(
+        Object.entries(datasetStore).filter(([_, datum]) => {
+          return datum.date.startsWith(
+            moment(`${year}-${Number(month) + 1}`, "YYYY-M").format("YYYY-MM")
+          );
+        })
       );
-    })
-  );
+      setMonthDatasetStore(monthDataset);
+    }
+  }, [month, setMonthDatasetStore, datasetStore, year]);
 
-  const listValues = Object.entries(monthDataset).map(([_, datum]) =>
+  if (!datasetStore || !monthDatasetStore) return null;
+
+  const listValues = Object.entries(monthDatasetStore).map(([_, datum]) =>
     getStepIndex(datum.value)
   );
 
@@ -48,38 +53,36 @@ export const MonthStats = ({ totalDays }: Props) => {
     {}
   );
 
-  const missingDays = totalDays - Object.keys(monthDataset).length;
-  const listColors = Object.values(monthDataset).map((d) =>
-    getColor(d.value).hex()
-  );
+  const missingDays = totalDays - Object.keys(monthDatasetStore).length;
 
   return (
     <>
       <Totals
-        populatedDays={Object.keys(monthDataset).length}
+        populatedDays={Object.keys(monthDatasetStore).length}
         totalDays={totalDays}
         averageColor={COLORS_STEPS[0]}
       />
+      <SemiCircle />
       <h1>Charts</h1>
       <ForceChart
         dataset={[
           ...Array(missingDays),
-          ...Object.values(monthDataset).map((d) => d.value),
+          ...Object.values(monthDatasetStore).map((d) => d.value),
         ]}
         grouped={Object.values(groupedByStep)}
         totalDays={totalDays}
         missingDays={missingDays}
-        monthDataset={monthDataset}
+        monthDataset={monthDatasetStore}
       />
       <Timeline
         dataset={[
           ...Array(missingDays),
-          ...Object.values(monthDataset).map((d) => d.value),
+          ...Object.values(monthDatasetStore).map((d) => d.value),
         ]}
         grouped={Object.values(groupedByStep)}
         totalDays={totalDays}
         missingDays={missingDays}
-        monthDataset={monthDataset}
+        monthDataset={monthDatasetStore}
       />
     </>
   );
