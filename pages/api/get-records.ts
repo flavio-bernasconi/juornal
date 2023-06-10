@@ -5,8 +5,9 @@ import { getSession } from "next-auth/react";
 
 const fetchAll: NextApiHandler = async (req, res) => {
   const session = await getSession({ req });
+  console.log("--- header GET", req.headers);
 
-  if (!session || !session.user?.username) {
+  if (!session || !session.user?.email) {
     return res.status(401).end();
   }
 
@@ -14,7 +15,7 @@ const fetchAll: NextApiHandler = async (req, res) => {
 
   const xata = getXataClient();
   const list = await xata.db["Jurnal-entries"]
-    .filter("user.username", session.user?.username)
+    .filter("user.email", session.user?.email)
     // .filter("date", {
     //   $contains: moment()
     //     .set("month", Number(month))

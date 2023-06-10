@@ -27,13 +27,13 @@ const updateRecord = async ({ body }: { body: Body }) =>
     body: JSON.stringify(body),
   });
 
-const createRecord = async ({ body }: { body: Body }) =>
-  fetch("/api/add-record", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-  });
+// const createRecord = async ({ body }: { body: Body }) =>
+//   fetch("/api/add-record", {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//     body: JSON.stringify(body),
+//   });
 
-export { fetchAllRecords, updateRecord, createRecord };
+export { fetchAllRecords, updateRecord };

@@ -3,10 +3,12 @@ import { authorize } from "../../utils/authorize";
 import { getXataClient } from "../../utils/xata";
 import moment from "moment";
 import { getSession } from "next-auth/react";
+import { getServerSession } from "next-auth";
+import { authConfig } from "@/pages/api/auth/[...nextauth]";
 
 const handler: NextApiHandler = async (req, res) => {
   try {
-    const session = await getSession({ req });
+    const session = await getServerSession(req, res, authConfig);
 
     if (!session) {
       return res.status(401).end();
@@ -19,13 +21,17 @@ const handler: NextApiHandler = async (req, res) => {
     }
 
     const xata = getXataClient();
-    const user = await xata.db.Users.filter({
-      username: session.user?.username,
-    }).getFirst();
+    const user = await xata.db.nextauth_users
+      .filter({
+        email: session.user?.email,
+      })
+      .getFirst();
     if (!user) {
       res.status(500).end();
       return;
     }
+
+    console.log("------ useeer", user);
 
     if (!id && (value || value === 0) && date) {
       await xata.db["Jurnal-entries"].create({

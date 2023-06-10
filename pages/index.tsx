@@ -19,7 +19,7 @@ import { WeekdaysInitials } from "@/components/dashboard/WeekdaysInitials";
 import { MonthStats } from "@/components/dashboard/Stats/MonthStats";
 import chroma from "chroma-js";
 import { DraggableNotification } from "@/components/DraggableNotification";
-import { getSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import { Modal } from "@/components/Modal";
 import { ModalSlider } from "@/components/dashboard/ModalSlider";
 import { fetchAllRecords } from "@/utils/api/records";
@@ -27,6 +27,8 @@ import css from "styled-jsx/css";
 
 const Dashboard = () => {
   const { query, replace } = useRouter();
+
+  const session = useSession({ required: true });
 
   const [datasetStore, setDatasetStore] = useAtom(DatasetAtom);
   const [isDetailOpen, setIsDetailOpen] = useAtom(NotificationAtom);

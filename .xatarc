@@ -1,6 +1,8 @@
 {
   "databaseURL": "https://Flavio-Bernasconi-s-workspace-kdea3a.us-east-1.xata.sh/db/jurnal-db",
   "codegen": {
-    "output": "utils/xata.ts"
+    "output": "utils/xata.ts",
+    "moduleType": "esm",
+    "declarations": true
   }
 }
