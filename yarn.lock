@@ -300,6 +300,11 @@
     hey-listen "^1.0.8"
     tslib "^2.3.1"
 
+"@next-auth/xata-adapter@^0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@next-auth/xata-adapter/-/xata-adapter-0.2.2.tgz#2f423ae006320e89bfb99830ad4d2593e48b3a6d"
+  integrity sha512-sEGGYMMdgEjS0djL50u1po03Xo4VSOXxHR1ytPClxYQ5zgd1LOEvdfzCDlRwfofz0eR0QrCuko03TMaUCie90A==
+
 "@next/env@13.1.0":
   version "13.1.0"
   resolved "https://registry.npmjs.org/@next/env/-/env-13.1.0.tgz"
