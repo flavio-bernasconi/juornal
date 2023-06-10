@@ -46,7 +46,7 @@ export const Slider = ({
         />
         <textarea name="note" />
         <h1>{getEmoji(value)}</h1>
-        <button>send</button>
+        <button>update value</button>
       </form>
     </Wrapper>
   );

@@ -16,12 +16,6 @@ const fetchAll: NextApiHandler = async (req, res) => {
   const xata = getXataClient();
   const list = await xata.db["Jurnal-entries"]
     .filter("user.email", session.user?.email)
-    // .filter("date", {
-    //   $contains: moment()
-    //     .set("month", Number(month))
-    //     .set("year", Number(year))
-    //     .format("YYYY-M-"),
-    // })
     .getAll();
 
   if (!list) {

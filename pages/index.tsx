@@ -142,6 +142,7 @@ const Dashboard = () => {
           ))}
           {listDaysMonth.map((monthDay, i) => {
             const journalEntry = datasetStore[monthDay];
+            console.log(journalEntry);
             return journalEntry ? (
               <DayWrapper
                 isActive={selectedDay?.id === journalEntry.id}

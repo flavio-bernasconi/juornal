@@ -7,7 +7,7 @@ import { useAtom } from "jotai";
 import { DatasetAtom } from "../store";
 import { Loader } from "../components/Loader";
 import { getSession } from "next-auth/react";
-import { createRecord } from "@/utils/api/records";
+import { updateRecord } from "@/utils/api/records";
 
 const AddEntry: FC<{ dataset: Dataset; isTodayAlreadySet: boolean }> = ({
   dataset,
@@ -18,22 +18,15 @@ const AddEntry: FC<{ dataset: Dataset; isTodayAlreadySet: boolean }> = ({
   const { push } = useRouter();
 
   useEffect(() => {
-    if (false) {
-      push({
-        pathname: "/dashboard",
-        query: { month: new Date().getMonth(), year: new Date().getFullYear() },
-      });
-    } else {
-      setDatasetStore(dataset);
-      setIsLoading(false);
-    }
+    setDatasetStore(dataset);
+    setIsLoading(false);
   }, [dataset, isTodayAlreadySet, push, setDatasetStore]);
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = new FormData(e.currentTarget);
 
-    await createRecord({
+    await updateRecord({
       body: {
         date: new Date().toISOString(),
         value: Number(data.get("value")),

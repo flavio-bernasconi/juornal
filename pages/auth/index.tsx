@@ -8,9 +8,7 @@ const Home = () => {
   const { push } = useRouter();
   return (
     <CenterBlock>
-      <button onClick={() => signIn("github", { callbackUrl: "/" })}>
-        login
-      </button>
+      <button onClick={() => signIn("", { callbackUrl: "/" })}>login</button>
     </CenterBlock>
   );
 };
